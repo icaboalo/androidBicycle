@@ -4,7 +4,7 @@ package com.icaboalo.bicycle.io;
  * Created by icaboalo on 13/04/16.
  */
 public class EndPoints {
-    public static final String BASE_URL = "https://devf-network.herokuapp.com/api/";
+    public static final String BASE_URL = "https://bicycle-network.herokuapp.com/api/";
     public static final String PATH_VERSION = "v1/";
 
     //    USER PATHS

@@ -1,6 +1,7 @@
 package com.icaboalo.bicycle.io;
 
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by icaboalo on 13/04/16.
@@ -13,6 +14,7 @@ public class ApiClient {
         if (mApiService == null){
             Retrofit nRetrofit = new Retrofit.Builder()
                     .baseUrl(EndPoints.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
             mApiService = nRetrofit.create(ApiService.class);
         }

@@ -9,6 +9,7 @@ import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
 import com.icaboalo.bicycle.io.ApiService;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
+import com.icaboalo.bicycle.ui.adapter.BicycleRecyclerAdapter;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        getBicycleList("");
     }
 
     void getBicycleList(String token){
@@ -36,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ArrayList<BicycleApiModel>> call, Response<ArrayList<BicycleApiModel>> response) {
                 if (response.isSuccessful()) {
-
+                    ArrayList<BicycleApiModel> bicycleList =  response.body();
+                    setupRecycler(bicycleList);
                 }
             }
 
@@ -49,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
     void setupRecycler(ArrayList<BicycleApiModel> bicycleList){
         LinearLayoutManager nLinearLayoutManager = new LinearLayoutManager(this);
+        BicycleRecyclerAdapter nBicycleRecyclerAdapter = new BicycleRecyclerAdapter(this, bicycleList);
         mBicycleRecycler.setLayoutManager(nLinearLayoutManager);
+        mBicycleRecycler.setAdapter(nBicycleRecyclerAdapter);
+
 
     }
 }
