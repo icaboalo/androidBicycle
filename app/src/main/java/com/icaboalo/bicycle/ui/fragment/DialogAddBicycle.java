@@ -16,17 +16,28 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.icaboalo.bicycle.R;
+import com.icaboalo.bicycle.io.ApiClient;
+import com.icaboalo.bicycle.io.model.BicycleApiModel;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by icaboalo on 14/04/16.
@@ -69,7 +80,16 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         alertDialog.setPositiveButton(getString(R.string.alert_positive_button), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                String brand = mBrand.getText().toString();
+                String model = mModel.getText().toString();
+                String color = mColor.getText().toString();
 
+                String track = mTrackSpinner.getSelectedItem().toString();
+                String year = mYearSpinner.getSelectedItem().toString();
+                BicycleApiModel newBicycle = new BicycleApiModel(brand, model, track, color, year, mLatitude, mLongitude);
+                Log.d("YEAR", newBicycle.getBicycleYear());
+                Log.d("TRACK", newBicycle.getBicycleTrack());
+                saveNewBicycle("", newBicycle);
             }
         });
         alertDialog.setNegativeButton(getString(R.string.alert_negative_button), new DialogInterface.OnClickListener() {
@@ -79,6 +99,36 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
             }
         });
         return alertDialog.create();
+    }
+
+
+    void saveNewBicycle(String token, BicycleApiModel bicycle){
+
+        Call<BicycleApiModel> call = ApiClient.getApiService().postBicycle(token, bicycle);
+        call.enqueue(new Callback<BicycleApiModel>() {
+            @Override
+            public void onResponse(Call<BicycleApiModel> call, Response<BicycleApiModel> response) {
+                if (response.isSuccessful()){
+                    Log.e("RETROFIT", "success");
+                }else {
+                    int statusCode = response.code();
+
+                    String error = null;
+                    try {
+                        error = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    // handle request errors yourself
+                    Log.e("RETROFIT", statusCode + " " + error);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BicycleApiModel> call, Throwable t) {
+                Log.e("RETROFIT", t.getMessage());
+            }
+        });
     }
 
 //    Creating Location manager
@@ -112,6 +162,8 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         mLatitude = String.valueOf(location.getLatitude());
         mLongitude = String.valueOf(location.getLongitude());
         Log.d("LOCATION", mLocation.getText().toString());
+        Log.d("LATITUDE", String.valueOf(location.getLatitude()));
+        Log.d("LONGITUDE", String.valueOf(location.getLongitude()));
     }
 
     @Override

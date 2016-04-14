@@ -83,7 +83,10 @@ public class MainActivity extends AppCompatActivity{
                     setupRecycler(bicycleList);
                     Log.e("RETROFIT", "success");
                 } else {
-                    Log.e("RETROFIT", "error");
+                    int statusCode = response.code();
+
+                    // handle request errors yourself
+                    Log.e("RETROFIT", statusCode + "");
                 }
             }
 
