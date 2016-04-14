@@ -51,8 +51,13 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        getBicycleList("");
 
+    }
+
+    @Override
+    protected void onResume() {
+        getBicycleList("");
+        super.onResume();
     }
 
     @Override
@@ -83,10 +88,7 @@ public class MainActivity extends AppCompatActivity{
                     setupRecycler(bicycleList);
                     Log.e("RETROFIT", "success");
                 } else {
-                    int statusCode = response.code();
-
-                    // handle request errors yourself
-                    Log.e("RETROFIT", statusCode + "");
+                Log.e("RETROFIT", "errorrror");
                 }
             }
 

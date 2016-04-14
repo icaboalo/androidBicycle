@@ -72,7 +72,7 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         LayoutInflater nInflater = getActivity().getLayoutInflater();
         View view = nInflater.inflate(R.layout.dialog_add_bicycle, null);
         ButterKnife.bind(this, view);
-        alertDialog.setView(view);
+        alertDialog.setView(view).setCancelable(false);
         setupTrackSpinner();
         setupYearSpinner();
         location();
@@ -80,16 +80,21 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         alertDialog.setPositiveButton(getString(R.string.alert_positive_button), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String brand = mBrand.getText().toString();
-                String model = mModel.getText().toString();
-                String color = mColor.getText().toString();
 
-                String track = mTrackSpinner.getSelectedItem().toString();
-                String year = mYearSpinner.getSelectedItem().toString();
-                BicycleApiModel newBicycle = new BicycleApiModel(brand, model, track, color, year, mLatitude, mLongitude);
-                Log.d("YEAR", newBicycle.getBicycleYear());
-                Log.d("TRACK", newBicycle.getBicycleTrack());
-                saveNewBicycle("", newBicycle);
+                if (isFormFilled()) {
+//                    get texts for bicycle model
+                    String brand = mBrand.getText().toString();
+                    String model = mModel.getText().toString();
+                    String color = mColor.getText().toString();
+
+                    String track = mTrackSpinner.getSelectedItem().toString();
+                    String year = mYearSpinner.getSelectedItem().toString();
+
+//                    create new bicycle object
+                    BicycleApiModel newBicycle = new BicycleApiModel(brand, model, track, color, year, mLatitude, mLongitude);
+//                    make the retrofit post request
+                    saveNewBicycle("", newBicycle);
+                }
             }
         });
         alertDialog.setNegativeButton(getString(R.string.alert_negative_button), new DialogInterface.OnClickListener() {
@@ -108,19 +113,12 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         call.enqueue(new Callback<BicycleApiModel>() {
             @Override
             public void onResponse(Call<BicycleApiModel> call, Response<BicycleApiModel> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Log.e("RETROFIT", "success");
-                }else {
+
+                } else {
                     int statusCode = response.code();
 
-                    String error = null;
-                    try {
-                        error = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    // handle request errors yourself
-                    Log.e("RETROFIT", statusCode + " " + error);
                 }
             }
 
@@ -181,5 +179,21 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
 //        If location is deactivated user is sent to settings
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
+    }
+
+//    Validator to check if form was filled before post
+    boolean isFormFilled(){
+        if (TextUtils.isEmpty(mBrand.getText().toString())){
+            mBrand.setError(getString(R.string.error_field_required));
+        }else if(TextUtils.isEmpty(mModel.getText())){
+            mModel.setError(getString(R.string.error_field_required));
+        }else if (TextUtils.isEmpty(mColor.getText())){
+            mColor.setError(getString(R.string.error_field_required));
+        }else if (TextUtils.isEmpty(mLocation.getText())){
+            mLocation.setError(getString(R.string.error_field_required));
+        }else {
+            return true;
+        }
+        return false;
     }
 }

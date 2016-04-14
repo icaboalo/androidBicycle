@@ -64,6 +64,7 @@ public class BicycleRecyclerAdapter extends RecyclerView.Adapter<BicycleRecycler
     public void showMap(Uri geoLocation) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(geoLocation);
+        intent.setPackage("com.google.android.apps.maps");
         if (intent.resolveActivity(mContext.getPackageManager()) != null) {
             mContext.startActivity(intent);
         }
