@@ -13,7 +13,7 @@ public class ApiClient {
     public static ApiService getApiService() {
         if (mApiService == null){
             Retrofit nRetrofit = new Retrofit.Builder()
-                    .baseUrl(EndPoints.BASE_URL)
+                    .baseUrl(EndPoints.ENDPOINT)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             mApiService = nRetrofit.create(ApiService.class);

@@ -1,16 +1,20 @@
 package com.icaboalo.bicycle.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 /**
@@ -36,14 +40,36 @@ public class BicycleRecyclerAdapter extends RecyclerView.Adapter<BicycleRecycler
     }
 
     @Override
-    public void onBindViewHolder(BicycleViewHolder holder, int position) {
-        BicycleApiModel bicycle = mBicycleList.get(position);
+    public void onBindViewHolder(final BicycleViewHolder holder, int position) {
+        final BicycleApiModel bicycle = mBicycleList.get(position);
         holder.setBrand(bicycle.getBicycleBrand());
         holder.setModel(bicycle.getBicycleModel());
         holder.setColor(bicycle.getBicycleColor());
         holder.setTrack(bicycle.getBicycleTrack());
         holder.setYear(bicycle.getBicycleYear());
+
+        holder.setButton(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, bicycle.getBicycleLatitude(), Toast.LENGTH_SHORT).show();
+                String latitude = bicycle.getBicycleLatitude();
+                String longitude = bicycle.getBicycleLongitude();
+                String label = "(" + bicycle.getBicycleBrand() + " " + bicycle.getBicycleModel() + ")";
+                Uri location = Uri.parse("geo:0,0&?q=" + latitude + "," + longitude + label);
+                showMap(location);
+            }
+        });
+
     }
+
+    public void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+            mContext.startActivity(intent);
+        }
+    }
+
 
     @Override
     public int getItemCount() {
@@ -70,7 +96,7 @@ public class BicycleRecyclerAdapter extends RecyclerView.Adapter<BicycleRecycler
         }
 
         public void setModel(String model) {
-            mModel.setError(model);
+            mModel.setText(model);
         }
 
         public void setTrack(String track) {
@@ -83,6 +109,10 @@ public class BicycleRecyclerAdapter extends RecyclerView.Adapter<BicycleRecycler
 
         public void setYear(String year) {
             mYear.setText(year);
+        }
+
+        public void setButton(View.OnClickListener onClickListener){
+            mMapsButton.setOnClickListener(onClickListener);
         }
     }
 }

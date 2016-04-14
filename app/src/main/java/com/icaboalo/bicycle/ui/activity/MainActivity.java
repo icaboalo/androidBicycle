@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
@@ -40,12 +41,15 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     ArrayList<BicycleApiModel> bicycleList =  response.body();
                     setupRecycler(bicycleList);
+                    Log.e("SUCCESS", "success");
+                }else{
+                    Log.e("ERROR", "error");
                 }
             }
 
             @Override
             public void onFailure(Call<ArrayList<BicycleApiModel>> call, Throwable t) {
-
+                Log.e("ERROR", t.getMessage());
             }
         });
     }
