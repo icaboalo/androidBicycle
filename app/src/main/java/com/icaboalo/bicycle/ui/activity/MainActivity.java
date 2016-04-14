@@ -1,5 +1,6 @@
 package com.icaboalo.bicycle.ui.activity;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import com.icaboalo.bicycle.io.ApiClient;
 import com.icaboalo.bicycle.io.ApiService;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 import com.icaboalo.bicycle.ui.adapter.BicycleRecyclerAdapter;
+import com.icaboalo.bicycle.ui.fragment.DialogAddBicycle;
 
 import java.util.ArrayList;
 
@@ -39,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ArrayList<BicycleApiModel>> call, Response<ArrayList<BicycleApiModel>> response) {
                 if (response.isSuccessful()) {
-                    ArrayList<BicycleApiModel> bicycleList =  response.body();
+                    ArrayList<BicycleApiModel> bicycleList = response.body();
                     setupRecycler(bicycleList);
                     Log.e("SUCCESS", "success");
-                }else{
+                } else {
                     Log.e("ERROR", "error");
                 }
             }
@@ -61,5 +63,11 @@ public class MainActivity extends AppCompatActivity {
         mBicycleRecycler.setAdapter(nBicycleRecyclerAdapter);
 
 
+    }
+
+    void showDialog(){
+        FragmentManager nFragmentManager = getSupportFragmentManager();
+        DialogAddBicycle nDialogAddBicycle = new DialogAddBicycle();
+        nDialogAddBicycle.show(nFragmentManager, "ADD_BICYCLE");
     }
 }
