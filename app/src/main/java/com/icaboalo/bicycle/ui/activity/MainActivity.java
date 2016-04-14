@@ -1,14 +1,27 @@
 package com.icaboalo.bicycle.ui.activity;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
-import com.icaboalo.bicycle.io.ApiService;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 import com.icaboalo.bicycle.ui.adapter.BicycleRecyclerAdapter;
 
@@ -20,10 +33,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LocationListener {
 
     @Bind(R.id.bicycle_list)
     RecyclerView mBicycleRecycler;
+
+    LocationManager mLocationManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +47,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         getBicycleList("");
+
+    }
+
+    void AddBicycle(){
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, this);
+            Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Toast.makeText(MainActivity.this, location.getLatitude() + "latitude", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String bla;
     }
 
     void getBicycleList(String token){
@@ -39,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ArrayList<BicycleApiModel>> call, Response<ArrayList<BicycleApiModel>> response) {
                 if (response.isSuccessful()) {
-                    ArrayList<BicycleApiModel> bicycleList =  response.body();
+                    ArrayList<BicycleApiModel> bicycleList = response.body();
                     setupRecycler(bicycleList);
                     Log.e("SUCCESS", "success");
-                }else{
+                } else {
                     Log.e("ERROR", "error");
                 }
             }
@@ -61,5 +96,27 @@ public class MainActivity extends AppCompatActivity {
         mBicycleRecycler.setAdapter(nBicycleRecyclerAdapter);
 
 
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        String sLocation = "Location: " + location.getLatitude() + "/" + location.getLongitude();
+        Toast.makeText(MainActivity.this, sLocation, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
     }
 }

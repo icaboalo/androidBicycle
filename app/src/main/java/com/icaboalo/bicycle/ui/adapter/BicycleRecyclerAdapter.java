@@ -51,7 +51,6 @@ public class BicycleRecyclerAdapter extends RecyclerView.Adapter<BicycleRecycler
         holder.setButton(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, bicycle.getBicycleLatitude(), Toast.LENGTH_SHORT).show();
                 String latitude = bicycle.getBicycleLatitude();
                 String longitude = bicycle.getBicycleLongitude();
                 String label = "(" + bicycle.getBicycleBrand() + " " + bicycle.getBicycleModel() + ")";
