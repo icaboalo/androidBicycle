@@ -6,6 +6,7 @@
               android:layout_height="match_parent">
 
     <android.support.design.widget.TextInputLayout
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -17,6 +18,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -28,12 +30,15 @@
     </android.support.design.widget.TextInputLayout>
 
     <Spinner
+        android:layout_marginBottom="16dp"
+        android:id="@+id/track_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     </Spinner>
 
     <android.support.design.widget.TextInputLayout
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -45,12 +50,15 @@
     </android.support.design.widget.TextInputLayout>
 
     <Spinner
+        android:layout_marginBottom="16dp"
+        android:id="@+id/year_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     </Spinner>
 
     <android.support.design.widget.TextInputLayout
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Bicycle</string>
+    <string name="alert_title">Add Bicycle</string>
+    <string name="alert_positive_button">SAVE</string>
+    <string name="alert_negative_button">CANCEL</string>
 
     <string-array name="track_array">
         <item>24</item>

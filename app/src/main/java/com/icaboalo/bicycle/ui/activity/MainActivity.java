@@ -40,12 +40,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity{
 
     @Bind(R.id.bicycle_list)
     RecyclerView mBicycleRecycler;
 
-    LocationManager mLocationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,21 +66,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         int id = item.getItemId();
         switch (id){
             case R.id.add:
-                AddBicycle();
+                showDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    void AddBicycle(){
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, this);
-        showDialog();
-    }
-
+//    Getting bicycle list with a retrofit request and passing it to the recycler
     void getBicycleList(String token){
         Call<ArrayList<BicycleApiModel>> call = ApiClient.getApiService().getBicycleList(token);
         call.enqueue(new Callback<ArrayList<BicycleApiModel>>() {
@@ -90,19 +81,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 if (response.isSuccessful()) {
                     ArrayList<BicycleApiModel> bicycleList = response.body();
                     setupRecycler(bicycleList);
-                    Log.e("SUCCESS", "success");
+                    Log.e("RETROFIT", "success");
                 } else {
-                    Log.e("ERROR", "error");
+                    Log.e("RETROFIT", "error");
                 }
             }
 
             @Override
             public void onFailure(Call<ArrayList<BicycleApiModel>> call, Throwable t) {
-                Log.e("ERROR", t.getMessage());
+                Log.e("RETROFIT", t.getMessage());
             }
         });
     }
 
+//    function for creating and populating the recyclerView
     void setupRecycler(ArrayList<BicycleApiModel> bicycleList){
         LinearLayoutManager nLinearLayoutManager = new LinearLayoutManager(this);
         BicycleRecyclerAdapter nBicycleRecyclerAdapter = new BicycleRecyclerAdapter(this, bicycleList);
@@ -112,28 +104,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        String sLocation = "Location: " + location.getLatitude() + "/" + location.getLongitude();
-        Toast.makeText(MainActivity.this, sLocation, Toast.LENGTH_SHORT).show();
-        Log.d("LOCATION", sLocation);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(intent);
-    }
+//    function so when button on clicked the alertDialog appears
     void showDialog(){
         FragmentManager nFragmentManager = getSupportFragmentManager();
         DialogAddBicycle nDialogAddBicycle = new DialogAddBicycle();
