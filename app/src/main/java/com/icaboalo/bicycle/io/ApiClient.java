@@ -7,9 +7,9 @@ import retrofit2.Retrofit;
  */
 public class ApiClient {
 
-    ApiService mApiService;
+    public static ApiService mApiService;
 
-    public ApiService getApiService() {
+    public static ApiService getApiService() {
         if (mApiService == null){
             Retrofit nRetrofit = new Retrofit.Builder()
                     .baseUrl(EndPoints.BASE_URL)
