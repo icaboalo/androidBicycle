@@ -1,5 +1,7 @@
 package com.icaboalo.bicycle.ui.activity;
 
+import com.icaboalo.bicycle.ui.fragment.DialogAddBicycle;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +30,7 @@ import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 import com.icaboalo.bicycle.ui.adapter.BicycleRecyclerAdapter;
+import com.icaboalo.bicycle.ui.fragment.DialogAddBicycle;
 
 import java.util.ArrayList;
 
@@ -75,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         }
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, this);
+        showDialog();
     }
 
     void getBicycleList(String token){
@@ -128,5 +133,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onProviderDisabled(String provider) {
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
+    }
+    void showDialog(){
+        FragmentManager nFragmentManager = getSupportFragmentManager();
+        DialogAddBicycle nDialogAddBicycle = new DialogAddBicycle();
+        nDialogAddBicycle.show(nFragmentManager, "ADD_BICYCLE");
     }
 }
