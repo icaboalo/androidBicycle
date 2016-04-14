@@ -51,7 +51,6 @@ public class BicycleRecyclerAdapter extends RecyclerView.Adapter<BicycleRecycler
         holder.setButton(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, bicycle.getBicycleLatitude(), Toast.LENGTH_SHORT).show();
                 String latitude = bicycle.getBicycleLatitude();
                 String longitude = bicycle.getBicycleLongitude();
                 String label = "(" + bicycle.getBicycleBrand() + " " + bicycle.getBicycleModel() + ")";
@@ -65,6 +64,7 @@ public class BicycleRecyclerAdapter extends RecyclerView.Adapter<BicycleRecycler
     public void showMap(Uri geoLocation) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(geoLocation);
+        intent.setPackage("com.google.android.apps.maps");
         if (intent.resolveActivity(mContext.getPackageManager()) != null) {
             mContext.startActivity(intent);
         }
