@@ -26,7 +26,7 @@
 
                 <TextView
                     android:id="@+id/model"
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:text="Model"
                     android:layout_gravity="center|left"
                     android:layout_width="wrap_content"
@@ -34,34 +34,40 @@
 
                 <TextView
                     android:id="@+id/year"
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:text="year"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|center_vertical"/>
 
                 <TextView
-                    android:id="@+id/track"
-                    android:textSize="24dp"
-                    android:text="Track"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"/>
-
-                <TextView
                     android:id="@+id/brand"
-                    android:textSize="36dp"
+                    android:textSize="36sp"
                     android:text="Brand"
                     android:layout_gravity="center_horizontal|top"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
                 <TextView
+                    android:id="@+id/track"
+                    android:textSize="24sp"
+                    android:text="Track"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|bottom"/>
+
+                <TextView
                     android:id="@+id/color"
-                    android:textSize="24dp"
+                    android:textSize="24sp"
                     android:text="color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"/>
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/imageView"
                     android:layout_gravity="center_horizontal|bottom"/>
             </FrameLayout>
             <Button
