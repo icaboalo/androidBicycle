@@ -50,11 +50,11 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.d("USERNAME", username);
         Log.d("PASSWORD", password);
-//        if (TextUtils.isEmpty(username)) {
-//            mUsernameInput.setError(getString(R.string.error_field_required));
-//        }else if (TextUtils.isEmpty(password)) {
-//            mPasswordInput.setError(getString(R.string.error_field_required));
-//        }else {
+        if (TextUtils.isEmpty(username)) {
+            mUsernameInput.setError(getString(R.string.error_field_required));
+        }else if (TextUtils.isEmpty(password)) {
+            mPasswordInput.setError(getString(R.string.error_field_required));
+        }else {
 
             TokenApiModel user = new TokenApiModel(username, password);
 
@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
-//    }
+    }
 
     void saveToken(String token){
         SharedPreferences nSharedPreferences = getSharedPreferences(PrefConstants.TOKEN_FILE, MODE_PRIVATE);

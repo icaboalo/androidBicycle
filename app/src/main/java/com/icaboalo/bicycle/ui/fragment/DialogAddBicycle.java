@@ -1,6 +1,7 @@
 package com.icaboalo.bicycle.ui.fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -68,12 +69,17 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
     @Bind(R.id.color_input)
     TextInputEditText mColor;
 
-    public static DialogAddBicycle newInstance(String token) {
-        DialogAddBicycle fragment = new DialogAddBicycle();
-        Bundle args = new Bundle();
-        args.putString("TOKEN", token);
-        fragment.setArguments(args);
-        return fragment;
+    public interface DialogListener{
+        void onDialogPositiveClick(DialogFragment dialog, TextInputEditText brand, TextInputEditText model, TextInputEditText color, TextInputEditText location, Spinner track, Spinner year, String latitude, String longitude);
+
+    }
+
+    DialogListener mListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (DialogListener) activity;
     }
 
     @NonNull
@@ -88,25 +94,10 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         setupYearSpinner();
         location();
         alertDialog.setTitle(getString(R.string.alert_title));
-        alertDialog.setPositiveButton(getString(R.string.alert_positive_button), new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("BLA", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                if (isFormFilled()) {
-//                    get texts for bicycle model
-                    String brand = mBrand.getText().toString();
-                    String model = mModel.getText().toString();
-                    String color = mColor.getText().toString();
-
-                    String track = mTrackSpinner.getSelectedItem().toString();
-                    String year = mYearSpinner.getSelectedItem().toString();
-
-//                    create new bicycle object
-                    BicycleApiModel newBicycle = new BicycleApiModel(brand, model, track, color, year, mLatitude, mLongitude);
-//                    make the retrofit post request
-                    String token = getArguments().getString("TOKEN", "");
-                    saveNewBicycle(token, newBicycle);
-                }
+                mListener.onDialogPositiveClick(DialogAddBicycle.this, mBrand, mModel, mColor, mLocation, mTrackSpinner, mYearSpinner, mLatitude, mLongitude);
             }
         });
         alertDialog.setNegativeButton(getString(R.string.alert_negative_button), new DialogInterface.OnClickListener() {
@@ -118,27 +109,6 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         return alertDialog.create();
     }
 
-    void saveNewBicycle(String token, BicycleApiModel bicycle) {
-
-        Call<BicycleApiModel> call = ApiClient.getApiService().postBicycle(token, bicycle);
-        call.enqueue(new Callback<BicycleApiModel>() {
-            @Override
-            public void onResponse(Call<BicycleApiModel> call, Response<BicycleApiModel> response) {
-                if (response.isSuccessful()) {
-                    Log.e("RETROFIT", "success");
-
-                } else {
-                    int statusCode = response.code();
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BicycleApiModel> call, Throwable t) {
-                Log.e("RETROFIT", t.getMessage());
-            }
-        });
-    }
 
     //    Creating Location manager
     private void location() {
@@ -189,21 +159,5 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
 //        If location is deactivated user is sent to settings
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
-    }
-
-    //    Validator to check if form was filled before post
-    boolean isFormFilled() {
-        if (TextUtils.isEmpty(mBrand.getText().toString())) {
-            mBrand.setError(getString(R.string.error_field_required));
-        } else if (TextUtils.isEmpty(mModel.getText())) {
-            mModel.setError(getString(R.string.error_field_required));
-        } else if (TextUtils.isEmpty(mColor.getText())) {
-            mColor.setError(getString(R.string.error_field_required));
-        } else if (TextUtils.isEmpty(mLocation.getText())) {
-            mLocation.setError(getString(R.string.error_field_required));
-        } else {
-            return true;
-        }
-        return false;
     }
 }
