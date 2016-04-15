@@ -22,7 +22,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="120dp">
+                android:layout_height="150dp">
 
                 <TextView
                     android:id="@+id/model"
@@ -65,11 +65,16 @@
                     android:layout_gravity="right|bottom"/>
 
                 <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="70dp"
+                    android:layout_width="120dp"
+                    android:layout_height="85dp"
                     android:id="@+id/imageView"
                     android:layout_gravity="center_horizontal|bottom"/>
             </FrameLayout>
+            <Button
+                android:id="@+id/photo_button"
+                android:text="PHOTO"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
             <Button
                 android:id="@+id/maps_button"
                 android:text="MAPS"

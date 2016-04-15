@@ -5,6 +5,8 @@ import com.icaboalo.bicycle.ui.fragment.DialogAddBicycle;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,12 +15,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 import com.icaboalo.bicycle.ui.adapter.BicycleRecyclerAdapter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 

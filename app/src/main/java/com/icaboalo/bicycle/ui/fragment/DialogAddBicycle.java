@@ -9,7 +9,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -29,6 +31,7 @@ import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
