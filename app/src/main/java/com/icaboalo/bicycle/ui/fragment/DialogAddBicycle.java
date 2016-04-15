@@ -42,7 +42,7 @@ import retrofit2.Response;
 /**
  * Created by icaboalo on 14/04/16.
  */
-public class DialogAddBicycle extends DialogFragment implements LocationListener{
+public class DialogAddBicycle extends DialogFragment implements LocationListener {
 
     LocationManager mLocationManager;
     String mLatitude, mLongitude;
@@ -107,7 +107,7 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
     }
 
 
-    void saveNewBicycle(String token, BicycleApiModel bicycle){
+    void saveNewBicycle(String token, BicycleApiModel bicycle) {
 
         Call<BicycleApiModel> call = ApiClient.getApiService().postBicycle(token, bicycle);
         call.enqueue(new Callback<BicycleApiModel>() {
@@ -129,13 +129,13 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         });
     }
 
-//    Creating Location manager
+    //    Creating Location manager
     private void location() {
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, this);
 
         }
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, this);
     }
 
     void setupTrackSpinner(){
