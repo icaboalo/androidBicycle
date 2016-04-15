@@ -68,6 +68,14 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
     @Bind(R.id.color_input)
     TextInputEditText mColor;
 
+    public static DialogAddBicycle newInstance(String token) {
+        DialogAddBicycle fragment = new DialogAddBicycle();
+        Bundle args = new Bundle();
+        args.putString("TOKEN", token);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -96,7 +104,8 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
 //                    create new bicycle object
                     BicycleApiModel newBicycle = new BicycleApiModel(brand, model, track, color, year, mLatitude, mLongitude);
 //                    make the retrofit post request
-                    saveNewBicycle("", newBicycle);
+                    String token = getArguments().getString("TOKEN", "");
+                    saveNewBicycle(token, newBicycle);
                 }
             }
         });
@@ -108,7 +117,6 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         });
         return alertDialog.create();
     }
-
 
     void saveNewBicycle(String token, BicycleApiModel bicycle) {
 
@@ -141,20 +149,19 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         }
     }
 
-    void setupTrackSpinner(){
+    void setupTrackSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.track_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTrackSpinner.setAdapter(adapter);
     }
 
-    void setupYearSpinner(){
+    void setupYearSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.year_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mYearSpinner.setAdapter(adapter);
     }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -184,17 +191,17 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         startActivity(intent);
     }
 
-//    Validator to check if form was filled before post
-    boolean isFormFilled(){
-        if (TextUtils.isEmpty(mBrand.getText().toString())){
+    //    Validator to check if form was filled before post
+    boolean isFormFilled() {
+        if (TextUtils.isEmpty(mBrand.getText().toString())) {
             mBrand.setError(getString(R.string.error_field_required));
-        }else if(TextUtils.isEmpty(mModel.getText())){
+        } else if (TextUtils.isEmpty(mModel.getText())) {
             mModel.setError(getString(R.string.error_field_required));
-        }else if (TextUtils.isEmpty(mColor.getText())){
+        } else if (TextUtils.isEmpty(mColor.getText())) {
             mColor.setError(getString(R.string.error_field_required));
-        }else if (TextUtils.isEmpty(mLocation.getText())){
+        } else if (TextUtils.isEmpty(mLocation.getText())) {
             mLocation.setError(getString(R.string.error_field_required));
-        }else {
+        } else {
             return true;
         }
         return false;

@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity{
 //    function so when button on clicked the alertDialog appears
     void showDialog(){
         FragmentManager nFragmentManager = getSupportFragmentManager();
-        DialogAddBicycle nDialogAddBicycle = new DialogAddBicycle();
+        DialogAddBicycle nDialogAddBicycle = new DialogAddBicycle().newInstance(getToken());
         nDialogAddBicycle.show(nFragmentManager, "ADD_BICYCLE");
     }
 }
