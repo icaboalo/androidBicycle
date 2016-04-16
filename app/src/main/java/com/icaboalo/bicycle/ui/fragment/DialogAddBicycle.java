@@ -1,6 +1,7 @@
 package com.icaboalo.bicycle.ui.fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +10,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -29,6 +32,7 @@ import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -42,7 +46,7 @@ import retrofit2.Response;
 /**
  * Created by icaboalo on 14/04/16.
  */
-public class DialogAddBicycle extends DialogFragment implements LocationListener{
+public class DialogAddBicycle extends DialogFragment implements LocationListener {
 
     LocationManager mLocationManager;
     String mLatitude, mLongitude;
@@ -65,6 +69,19 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
     @Bind(R.id.color_input)
     TextInputEditText mColor;
 
+    public interface DialogListener{
+        void onDialogPositiveClick(DialogFragment dialog, TextInputEditText brand, TextInputEditText model, TextInputEditText color, TextInputEditText location, Spinner track, Spinner year, String latitude, String longitude);
+
+    }
+
+    DialogListener mListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (DialogListener) activity;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -77,24 +94,10 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
         setupYearSpinner();
         location();
         alertDialog.setTitle(getString(R.string.alert_title));
-        alertDialog.setPositiveButton(getString(R.string.alert_positive_button), new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("BLA", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                if (isFormFilled()) {
-//                    get texts for bicycle model
-                    String brand = mBrand.getText().toString();
-                    String model = mModel.getText().toString();
-                    String color = mColor.getText().toString();
-
-                    String track = mTrackSpinner.getSelectedItem().toString();
-                    String year = mYearSpinner.getSelectedItem().toString();
-
-//                    create new bicycle object
-                    BicycleApiModel newBicycle = new BicycleApiModel(brand, model, track, color, year, mLatitude, mLongitude);
-//                    make the retrofit post request
-                    saveNewBicycle("", newBicycle);
-                }
+                mListener.onDialogPositiveClick(DialogAddBicycle.this, mBrand, mModel, mColor, mLocation, mTrackSpinner, mYearSpinner, mLatitude, mLongitude);
             }
         });
         alertDialog.setNegativeButton(getString(R.string.alert_negative_button), new DialogInterface.OnClickListener() {
@@ -107,51 +110,28 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
     }
 
 
-    void saveNewBicycle(String token, BicycleApiModel bicycle){
-
-        Call<BicycleApiModel> call = ApiClient.getApiService().postBicycle(token, bicycle);
-        call.enqueue(new Callback<BicycleApiModel>() {
-            @Override
-            public void onResponse(Call<BicycleApiModel> call, Response<BicycleApiModel> response) {
-                if (response.isSuccessful()) {
-                    Log.e("RETROFIT", "success");
-
-                } else {
-                    int statusCode = response.code();
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BicycleApiModel> call, Throwable t) {
-                Log.e("RETROFIT", t.getMessage());
-            }
-        });
-    }
-
-//    Creating Location manager
+    //    Creating Location manager
     private void location() {
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, this);
 
         }
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 10, this);
     }
 
-    void setupTrackSpinner(){
+    void setupTrackSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.track_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTrackSpinner.setAdapter(adapter);
     }
 
-    void setupYearSpinner(){
+    void setupYearSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.year_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mYearSpinner.setAdapter(adapter);
     }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -179,21 +159,5 @@ public class DialogAddBicycle extends DialogFragment implements LocationListener
 //        If location is deactivated user is sent to settings
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
-    }
-
-//    Validator to check if form was filled before post
-    boolean isFormFilled(){
-        if (TextUtils.isEmpty(mBrand.getText().toString())){
-            mBrand.setError(getString(R.string.error_field_required));
-        }else if(TextUtils.isEmpty(mModel.getText())){
-            mModel.setError(getString(R.string.error_field_required));
-        }else if (TextUtils.isEmpty(mColor.getText())){
-            mColor.setError(getString(R.string.error_field_required));
-        }else if (TextUtils.isEmpty(mLocation.getText())){
-            mLocation.setError(getString(R.string.error_field_required));
-        }else {
-            return true;
-        }
-        return false;
     }
 }

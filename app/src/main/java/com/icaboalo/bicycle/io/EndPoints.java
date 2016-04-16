@@ -9,7 +9,7 @@ public class EndPoints {
 
     //    USER PATHS
     //Path for to obtain user token
-    public static final String PATH_TOKEN = "api-token-auth/";
+    public static final String PATH_TOKEN = "token-auth/";
 
     //    BICYCLE PATHS
     //Path to get list of bicycles

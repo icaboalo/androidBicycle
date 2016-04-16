@@ -1,37 +1,34 @@
 package com.icaboalo.bicycle.ui.activity;
 
+import com.icaboalo.bicycle.domain.PrefConstants;
 import com.icaboalo.bicycle.ui.fragment.DialogAddBicycle;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Criteria;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.icaboalo.bicycle.R;
 import com.icaboalo.bicycle.io.ApiClient;
 import com.icaboalo.bicycle.io.model.BicycleApiModel;
 import com.icaboalo.bicycle.ui.adapter.BicycleRecyclerAdapter;
-import com.icaboalo.bicycle.ui.fragment.DialogAddBicycle;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -40,24 +37,34 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements DialogAddBicycle.DialogListener{
 
     @Bind(R.id.bicycle_list)
     RecyclerView mBicycleRecycler;
 
+    @Override
+    protected void onStart() {
+        if (!getToken().contains("Token")){
+            Intent goToLogin = new Intent(this, LoginActivity.class);
+            startActivity(goToLogin);
+        }
+        super.onStart();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        Log.d("TOKEN", getToken());
+        getBicycleList(getToken());
 
     }
 
-    @Override
-    protected void onResume() {
-        getBicycleList("");
-        super.onResume();
+    private String getToken() {
+        SharedPreferences nSharedPreferences = getSharedPreferences(PrefConstants.TOKEN_FILE, MODE_PRIVATE);
+        String token = nSharedPreferences.getString(PrefConstants.TOKEN_PREF, "");
+        return token;
     }
 
     @Override
@@ -72,6 +79,16 @@ public class MainActivity extends AppCompatActivity{
         switch (id){
             case R.id.add:
                 showDialog();
+                return true;
+            case R.id.action_logout:
+                SharedPreferences nSharedPreferences = getSharedPreferences(PrefConstants.TOKEN_FILE, MODE_PRIVATE);
+                nSharedPreferences.edit().putString(PrefConstants.TOKEN_PREF, " ").apply();
+                Intent goToLogin = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(goToLogin);
+                finish();
+                return true;
+            case R.id.action_refresh:
+                getBicycleList(getToken());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -88,12 +105,41 @@ public class MainActivity extends AppCompatActivity{
                     setupRecycler(bicycleList);
                     Log.e("RETROFIT", "success");
                 } else {
-                Log.e("RETROFIT", "errorrror");
+                    String error = null;
+                    try {
+                        error = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Log.e("RETROFIT", error);
                 }
             }
 
             @Override
             public void onFailure(Call<ArrayList<BicycleApiModel>> call, Throwable t) {
+                Log.e("RETROFIT", t.getMessage());
+            }
+        });
+    }
+
+    void saveNewBicycle(String token, BicycleApiModel bicycle) {
+
+        Call<BicycleApiModel> call = ApiClient.getApiService().postBicycle(token, bicycle);
+        call.enqueue(new Callback<BicycleApiModel>() {
+            @Override
+            public void onResponse(Call<BicycleApiModel> call, Response<BicycleApiModel> response) {
+                if (response.isSuccessful()) {
+                    Log.e("RETROFIT", "success");
+                    getBicycleList(getToken());
+
+                } else {
+                    int statusCode = response.code();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BicycleApiModel> call, Throwable t) {
                 Log.e("RETROFIT", t.getMessage());
             }
         });
@@ -115,4 +161,26 @@ public class MainActivity extends AppCompatActivity{
         DialogAddBicycle nDialogAddBicycle = new DialogAddBicycle();
         nDialogAddBicycle.show(nFragmentManager, "ADD_BICYCLE");
     }
+
+
+//    Controls the dialog save button
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog, TextInputEditText brand, TextInputEditText model, TextInputEditText color, TextInputEditText location, Spinner track, Spinner year, String latitude, String longitude) {
+
+//                    get texts for bicycle model
+        String bicycleBrand = brand.getText().toString();
+        String bicycleModel = model.getText().toString();
+        String bicycleColor = color.getText().toString();
+
+        String bicycleTrack = track.getSelectedItem().toString();
+        String bicycleYear = year.getSelectedItem().toString();
+
+//                    create new bicycle object
+        BicycleApiModel newBicycle = new BicycleApiModel(bicycleBrand, bicycleModel, bicycleTrack, bicycleColor, bicycleYear, latitude, longitude);
+//                    make the retrofit post request
+
+            saveNewBicycle(getToken(), newBicycle);
+
+    }
+
 }
